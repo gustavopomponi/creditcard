@@ -19,8 +19,8 @@ A PCI DSS compliant Spring Boot REST API for secure credit card management with 
 - 🔐 **JWT Authentication** - Secure token-based authentication
 - 💳 **Credit Card Management** - CRUD operations for credit cards
 - 🔒 **AES-256-GCM Encryption** - Industry-standard encryption for PAN storage
-- 📁 **Batch Upload** - Support for TXT, CSV, and JSON file formats
-- 🔍 **Card Search** - Fast hash-based search by full card number
+- 📁 **Batch Upload** - Support for TXT
+- 🔍 **Card Search** - Search by full card number
 - 📝 **Audit Logging** - Complete audit trail for all operations
 - 🎭 **PAN Masking** - PCI DSS compliant display masking
 - 🚫 **CVV Never Stored** - Strict PCI DSS compliance
@@ -106,7 +106,7 @@ This API implements the following PCI DSS requirements:
    The API will start on `http://localhost:8080`
 
    The application uses Docker Compose. Once the application is started, a container will be created
-   to support MySql Database. All tables will be created.
+   to support MySql Database. Database and all tables will be created.
 
 
 ### Configuration
@@ -659,14 +659,14 @@ curl -X POST http://localhost:8080/api/credit-cards/search \
 │         Spring Boot Application          │
 │  ┌────────────────────────────────────┐ │
 │  │   Security Layer (JWT Filter)      │ │
-│  └───��────────┬───────────────────────┘ │
-│               │                          │
+│  └───��────────┬────────────────────┘ │
+│               │                         │
 │  ┌────────────▼───────────────────────┐ │
 │  │      Controllers                   │ │
 │  │  - AuthController                  │ │
 │  │  - CreditCardController            │ │
 │  └────────────┬───────────────────────┘ │
-│               │                          │
+│               │                         │
 │  ┌────────────▼───────────────────────┐ │
 │  │      Services                      │ │
 │  │  - CreditCardService               │ │
@@ -674,7 +674,7 @@ curl -X POST http://localhost:8080/api/credit-cards/search \
 │  │  - AuditLogService                 │ │
 │  │  - BatchUploadService              │ │
 │  └────────────┬───────────────────────┘ │
-│               │                          │
+│               │                         │
 │  ┌────────────▼───────────────────────┐ │
 │  │      Repositories (JPA)            │ │
 │  └────────────┬───────────────────────┘ │
@@ -682,7 +682,7 @@ curl -X POST http://localhost:8080/api/credit-cards/search \
                 │
        ┌────────▼────────┐
        │    Database     │
-       │  (H2/PostgreSQL)│
+       │  (MySql)        │
        └─────────────────┘
 ```
 

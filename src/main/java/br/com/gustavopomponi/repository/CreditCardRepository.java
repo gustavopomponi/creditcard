@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface CreditCardRepository extends JpaRepository<CreditCard, Long> {
     List<CreditCard> findByUserIdAndIsActive(Long userId, Boolean isActive);
-    List<CreditCard> findByUserId(Long userId);
 }

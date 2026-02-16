@@ -53,7 +53,7 @@ public class BatchCardUploadService {
 
         try {
 
-            List<CreditCardRequest> cards = fileParserService.parseFile(file, fileType);
+            List<CreditCardRequest> cards = fileParserService.parseFile(file);
             response.setTotalRecords(cards.size());
 
             if (cards.isEmpty()) {

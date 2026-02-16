@@ -13,8 +13,8 @@ spring:
     properties:
       hibernate.dialect: org.hibernate.dialect.MySQLDialect
   jwt:
-    secret: ${JWT_SECRET:mysecretkey} # Use environment variable or default value
+    secret: ${JWT_SECRET} # Use environment variable or default value
     expiration: 86400000 # 24 hours in milliseconds
 
 encryption:
-  key: ${ENCRYPTION_KEY:GELl+iSbUQGpAeXTJsHRmGWYHuDyBt07Jv4NyeW43ok=} # Use environment variable or default value
+  key: ${ENCRYPTION_KEY} # Use environment variable or default value

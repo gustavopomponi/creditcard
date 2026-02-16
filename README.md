@@ -85,7 +85,7 @@ This API implements the following PCI DSS requirements:
 
 2. **Generate encryption key**
    ```bash
-   mvn compile exec:java -Dexec.mainClass="br.com.gustavopomponi.util.KeyGenerationUtil"
+   mvn compile exec:java
    ```
    
    Copy the generated key and set it as an environment variable:

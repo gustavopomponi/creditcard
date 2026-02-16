@@ -1,0 +1,8 @@
+services:
+  mysql:
+    image: 'mysql:latest'
+    environment:
+      - 'MYSQL_DATABASE=db_creditcard'
+      - 'MYSQL_ROOT_PASSWORD=senha2026'
+    ports:
+      - '3306:3306'

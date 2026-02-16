@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: gustavopomponi
+  datasource:
+    url: ${DATABASE_URL:jdbc:mysql://mysql:3306/db_creditcard}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DATABASE_USERNAME:root}
+    password: ${DATABASE_USERNAME:senha2026}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQLDialect
+  jwt:
+    secret: ${JWT_SECRET:mysecretkey} # Use environment variable or default value
+    expiration: 86400000 # 24 hours in milliseconds
+
+encryption:
+  key: ${ENCRYPTION_KEY:GELl+iSbUQGpAeXTJsHRmGWYHuDyBt07Jv4NyeW43ok=} # Use environment variable or default value

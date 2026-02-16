@@ -88,9 +88,13 @@ This API implements the following PCI DSS requirements:
    mvn compile exec:java
    ```
    
-   Copy the generated key and set it as an environment variable:
+   Copy the generated key and set it as an environment variable (LINUX):
    ```bash
    export ENCRYPTION_KEY="your_generated_key_here"
+   ```
+   Copy the generated key and set it as an environment variable (WINDOWS):
+   ```bash
+   $env:ENCRYPTION_KEY = "your_generated_key_here"
    ```
 
 3. **Build the project**

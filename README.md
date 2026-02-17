@@ -107,7 +107,7 @@ This API implements the following PCI DSS requirements:
    mvn spring-boot:run
    ```
 
-   The API will start on `http://localhost:8080`
+   The API will start on `https://localhost:8443`
 
    The application uses Docker Compose. Once the application is started, a container will be created
    to support MySql Database. Database and all tables will be created.
@@ -133,7 +133,14 @@ jwt:
   expiration: 86400000 # 24 hours
 
 server:
-  port: 8080
+  port: 8443
+  ssl:
+    key-store: classpath:certificate/springboot.p12
+    key-store-password: changeit
+    key-store-type: PKCS12
+    key-alias: springboot
+  http2:
+    enabled: true
 ```
 
 ## 📚 API Documentation
@@ -141,7 +148,7 @@ server:
 ### Base URL
 
 ```
-http://localhost:8080/api/v1
+https://localhost:8443/api/v1
 ```
 
 ### Authentication
@@ -273,15 +280,7 @@ Content-Type: application/json
 **Response:** `200 OK`
 ```json
 {
-  "id": 1,
-  "maskedPan": "411111******1111",
-  "cardHolderName": "John Doe",
-  "expiryMonth": 12,
-  "expiryYear": 2025,
-  "cardBrand": "VISA",
-  "isActive": true,
-  "createdAt": "2024-01-15T10:30:00",
-  "lastUsedAt": null
+  "id": "22146b94-1931-450a-9688-0324d9e5bd63"
 }
 ```
 
@@ -343,7 +342,7 @@ Content-Type: multipart/form-data
       "lineNumber": 1,
       "status": "SUCCESS",
       "maskedPan": "411111******1111",
-      "cardHolderName": "John Doe",
+      "errorMessage": null,
       "cardId": 1
     },
     {
@@ -398,7 +397,7 @@ Content-Type: multipart/form-data
 
 **Example cURL:**
 ```bash
-curl -X POST http://localhost:8080/api/credit-cards/batch-upload \
+curl -X POST https://localhost:8443/api/v1/credit-cards/batch-upload \
   -H "Authorization: Bearer {token}" \
   -F "file=@cards.txt" \
   -F "fileType=txt"
@@ -406,49 +405,13 @@ curl -X POST http://localhost:8080/api/credit-cards/batch-upload \
 
 ---
 
-### 8. Decrypt PAN (Restricted)
-
-⚠️ **Highly Restricted Endpoint** - Only for transaction processing.
-
-**Endpoint:** `GET /api/credit-cards/{id}/decrypt`
-
-**Headers:**
-```
-Authorization: Bearer {jwt_token}
-```
-
-**Path Parameters:**
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| id | Long | Card ID |
-
-**Response:** `200 OK`
-```json
-{
-  "message": "PAN decrypted for processing",
-  "maskedPan": "411111******1111",
-  "note": "Full PAN available for server-side processing only"
-}
-```
-
-⚠️ **Security Notes:**
-- This endpoint should be heavily restricted in production
-- All decryption attempts are logged
-- Consider implementing additional authorization checks
-- Full PAN should only be used server-side, never returned to client
-
----
-
 ## 📁 File Formats
 
 ### TXT Format
 
-**Delimiter:** Pipe character `|`
-
 **Format:**
 ```
-cardNumber|cardHolderName|expiryMonth|expiryYear|cvv|serviceCode
+cardNumber
 ```
 
 **Features:**
@@ -458,100 +421,37 @@ cardNumber|cardHolderName|expiryMonth|expiryYear|cvv|serviceCode
 
 **Example:**
 ```txt
-# Credit Card Import File
-4111111111111111|John Doe|12|2025|123|201
-5555555555554444|Jane Smith|06|2026|456
-# This is a comment
-378282246310005|Bob Johnson|03|2027|7890
+DESAFIO-HYPERATIVA           20180524LOTE0001000010   // [01-29]NOME   [30-37]DATA   [38-45]LOTE   [46-51]QTD DE REGISTROS
+C2     4456897999999999                               // [01-01]IDENTIFICADOR DA LINHA   [02-07]NUMERAÇÃO NO LOTE   [08-26]NÚMERO DE CARTAO COMPLETO
+C1     4456897922969999                               // OBS. ORIENTACAO NÚMERICA A ESQUERDA E ARQUIVO INTEIRO COMPLETADO COM ESPAÇOS ATÉ COLUNA 51
+C3     4456897999999999
+C4     4456897998199999
+C10    4456897919999999
+LOTE0001000010                   
 ```
-
-### CSV Format
-
-**Delimiter:** Comma `,`
-
-**Format:**
-```
-cardNumber,cardHolderName,expiryMonth,expiryYear,cvv,serviceCode
-```
-
-**Features:**
-- Header row optional (auto-detected)
-- Service code optional
-
-**Example:**
-```csv
-cardNumber,cardHolderName,expiryMonth,expiryYear,cvv,serviceCode
-4111111111111111,John Doe,12,2025,123,201
-5555555555554444,Jane Smith,06,2026,456,201
-```
-
-### JSON Format
-
-**Format:**
-```json
-{
-  "cards": [
-    {
-      "cardNumber": "4111111111111111",
-      "cardHolderName": "John Doe",
-      "expiryMonth": 12,
-      "expiryYear": 2025,
-      "cvv": "123",
-      "serviceCode": "201"
-    }
-  ]
-}
-```
-
-**Features:**
-- Supports array directly or `cards` property
-- Service code optional
-- Proper JSON validation
-
----
-
-## 🧪 Testing
-
-### Test Cards (Luhn Valid)
-
-Use these test card numbers for development:
-
-| Card Brand | Number | CVV |
-|------------|--------|-----|
-| Visa | 4111111111111111 | 123 |
-| Visa | 4012888888881881 | 456 |
-| Mastercard | 5555555555554444 | 789 |
-| Mastercard | 5105105105105100 | 321 |
-| Amex | 378282246310005 | 1234 |
-| Amex | 371449635398431 | 4567 |
-| Discover | 6011111111111117 | 890 |
 
 ### Example Requests
 
 **1. Login and Store Card:**
 ```bash
 # Login
-TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
+TOKEN=$(curl -s -X POST https://localhost:8443/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"user","password":"password"}' \
   | jq -r '.token')
 
 # Add Card
-curl -X POST http://localhost:8080/api/credit-cards \
+curl -X POST https://localhost:8443/api/v1/credit-cards \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "cardNumber": "4111111111111111",
-    "cardHolderName": "John Doe",
-    "expiryMonth": 12,
-    "expiryYear": 2025,
-    "cvv": "123"
+    "cardNumber": "4111111111111111"
   }'
 ```
 
 **2. Batch Upload:**
 ```bash
-curl -X POST http://localhost:8080/api/credit-cards/batch-upload \
+curl -X POST https://localhost:8443/api/v1/credit-cards/batch-upload \
   -H "Authorization: Bearer $TOKEN" \
   -F "file=@cards.txt" \
   -F "fileType=txt"
@@ -559,7 +459,7 @@ curl -X POST http://localhost:8080/api/credit-cards/batch-upload \
 
 **3. Search Card:**
 ```bash
-curl -X POST http://localhost:8080/api/credit-cards/search \
+curl -X POST https://localhost:8443/api/v1/credit-cards/search \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"cardNumber":"4111111111111111"}'
@@ -700,9 +600,9 @@ curl -X POST http://localhost:8080/api/credit-cards/search \
 |----------|----------|-------------|---------|
 | ENCRYPTION_KEY | ✅ | AES-256 encryption key (Base64) | `kW8jP3mZ9xN2vB7n...` |
 | JWT_SECRET | ✅ | JWT signing secret | `mySecretKey123...` |
-| DATABASE_URL | ❌ | Database connection URL | `jdbc:postgresql://...` |
-| DATABASE_USERNAME | ❌ | Database username | `dbuser` |
-| DATABASE_PASSWORD | ❌ | Database password | `dbpass` |
+| DATABASE_URL | ✅ | Database connection URL | `jdbc:postgresql://...` |
+| DATABASE_USERNAME | ✅ | Database username | `dbuser` |
+| DATABASE_PASSWORD | ✅ | Database password | `dbpass` |
 
 ### application.yml
 
@@ -734,9 +634,14 @@ jwt:
   expiration: 86400000 # 24 hours
 
 server:
-  port: ${PORT:8080}
+  port: 8443
   ssl:
-    enabled: false # Set to true in production
+    key-store: classpath:certificate/springboot.p12
+    key-store-password: changeit
+    key-store-type: PKCS12
+    key-alias: springboot
+  http2:
+    enabled: true
 ```
 
 ---

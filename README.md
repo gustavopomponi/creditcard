@@ -88,13 +88,15 @@ This API implements the following PCI DSS requirements:
    mvn compile exec:java
    ```
    
-   Copy the generated key and set it as an environment variable (LINUX):
+   Copy the generated key and secret and set it as an environment variable (LINUX):
    ```bash
    export ENCRYPTION_KEY="your_generated_key_here"
+   export JWT_SECRET="your generated_jwt_secret_here"
    ```
-   Copy the generated key and set it as an environment variable (WINDOWS):
+   Copy the generated key secret and set it as an environment variable (WINDOWS):
    ```bash
    $env:ENCRYPTION_KEY = "your_generated_key_here"
+   $env:JWT_SECRET = "your generated_jwt_secret_here"
    ```
 
 3. **Build the project**
@@ -517,12 +519,6 @@ curl -X POST https://localhost:8443/api/v1/credit-cards/search \
 | first_six_digits | VARCHAR(6) | No | BIN (for display) |
 | last_four_digits | VARCHAR(4) | No | Last 4 digits (for display) |
 | encrypted_pan | TEXT | No | AES-256 encrypted PAN |
-| pan_hash | VARCHAR(64) | No | SHA-256 hash for searching |
-| card_holder_name | VARCHAR(100) | No | Name on card |
-| expiry_month | INTEGER | No | Expiration month (1-12) |
-| expiry_year | INTEGER | No | Expiration year |
-| service_code | VARCHAR(3) | Yes | Service code |
-| card_brand | VARCHAR(20) | Yes | VISA, MASTERCARD, etc. |
 | is_active | BOOLEAN | No | Active status |
 | created_at | TIMESTAMP | No | Creation timestamp |
 | updated_at | TIMESTAMP | Yes | Last update timestamp |

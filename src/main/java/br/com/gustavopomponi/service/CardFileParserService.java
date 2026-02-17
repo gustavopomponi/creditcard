@@ -65,7 +65,7 @@ public class CardFileParserService {
 
     private CreditCardRequest parseTXTLine(String line, int lineNumber) {
 
-        String trim = line.substring(7, line.length() - 1).trim();
+        String trim = line.substring(7).trim();
         String substringCard = trim.length() > 19 ? trim.substring(0, 19).trim() : trim;
 
         CreditCardRequest request = new CreditCardRequest();

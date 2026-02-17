@@ -3,9 +3,9 @@ spring:
     name: gustavopomponi
   datasource:
     url: ${DATABASE_URL:jdbc:mysql://mysql:3306/db_creditcard}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driverg
     username: ${DATABASE_USERNAME:root}
-    password: ${DATABASE_USERNAME:senha2026}
+    password: ${DATABASE_PASSWORD:senha2026}
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -18,3 +18,13 @@ spring:
 
 encryption:
   key: ${ENCRYPTION_KEY} # Use environment variable or default value
+
+server:
+  port: 8443
+  ssl:
+    key-store: classpath:certificate/springboot.p12
+    key-store-password: changeit
+    key-store-type: PKCS12
+    key-alias: springboot
+  http2:
+    enabled: true
